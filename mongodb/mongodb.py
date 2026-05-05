@@ -1,10 +1,3 @@
-"""
-╔══════════════════════════════════════════════════════════════╗
-║           MongoDB Task - Complete Professional Solution        ║
-║           Database: University Management System              ║
-╚══════════════════════════════════════════════════════════════╝
-"""
-
 from pymongo import MongoClient
 from pprint import pprint
 import sys
@@ -14,15 +7,13 @@ def connect():
     uri = os.getenv("MONGO_URI", "mongodb://localhost:27017/")
     client = MongoClient(uri)
     db = client["university_db"]
-    print("✅ Connected to MongoDB successfully!")
+    print("Connected to MongoDB successfully!")
     return client, db
 
-# ─────────────────────────────────────────────
 # PART 1 – TASK 1: Create 2 Collections + 3+ Documents Each
-# ─────────────────────────────────────────────
 def task1_create_collections(db):
     print("\n" + "="*60)
-    print("📌 TASK 1: Creating Collections & Documents")
+    print("TASK 1: Creating Collections & Documents")
     print("="*60)
 
     # Drop if exists (clean run)
@@ -50,34 +41,30 @@ def task1_create_collections(db):
     db.students.insert_many(students)
     db.courses.insert_many(courses)
 
-    print(f"✅ Inserted {db.students.count_documents({})} students into 'students' collection")
-    print(f"✅ Inserted {db.courses.count_documents({})} courses into 'courses' collection")
+    print(f"Inserted {db.students.count_documents({})} students into 'students' collection")
+    print(f"Inserted {db.courses.count_documents({})} courses into 'courses' collection")
 
-# ─────────────────────────────────────────────
 # PART 1 – TASK 2: Delete at Least 1 Document from Each
-# ─────────────────────────────────────────────
 def task2_delete_documents(db):
     print("\n" + "="*60)
-    print("📌 TASK 2: Deleting Documents")
+    print("TASK 2: Deleting Documents")
     print("="*60)
 
     # Delete student with _id=5
     result1 = db.students.delete_one({"_id": 5})
-    print(f"✅ Deleted {result1.deleted_count} student (Youssef Tarek, _id=5) from 'students'")
+    print(f"Deleted {result1.deleted_count} student (Youssef Tarek, _id=5) from 'students'")
 
     # Delete course with _id=5
     result2 = db.courses.delete_one({"_id": 5})
-    print(f"✅ Deleted {result2.deleted_count} course (Linear Algebra, _id=5) from 'courses'")
+    print(f"Deleted {result2.deleted_count} course (Linear Algebra, _id=5) from 'courses'")
 
     print(f"   → Remaining students: {db.students.count_documents({})}")
     print(f"   → Remaining courses:  {db.courses.count_documents({})}")
 
-# ─────────────────────────────────────────────
 # PART 1 – TASK 3: Update 2+ Documents — Add 'Score' Array
-# ─────────────────────────────────────────────
 def task3_add_score_array(db):
     print("\n" + "="*60)
-    print("📌 TASK 3: Adding 'Score' Array to Documents")
+    print("TASK 3: Adding 'Score' Array to Documents")
     print("="*60)
 
     # Add Score array to ALL students
@@ -85,23 +72,19 @@ def task3_add_score_array(db):
         {},
         {"$set": {"Score": [70, 80, 0, 0]}}
     )
-    print("✅ Added 'Score' array [70, 80, 0, 0] to all students")
+    print("Added 'Score' array [70, 80, 0, 0] to all students")
 
     # Add Score array to ALL courses
     db.courses.update_many(
         {},
         {"$set": {"Score": [85, 90, 0, 0]}}
     )
-    print("✅ Added 'Score' array [85, 90, 0, 0] to all courses")
+    print("Added 'Score' array [85, 90, 0, 0] to all courses")
 
-# ─────────────────────────────────────────────
 # PART 1 – TASK 4: Conditional Score Update
-#   if _id == 1 → put 5 in index [2] (3rd position)
-#   else        → put 6 in index [3] (4th position)
-# ─────────────────────────────────────────────
 def task4_conditional_score_update(db):
     print("\n" + "="*60)
-    print("📌 TASK 4: Conditional Score Update")
+    print("TASK 4: Conditional Score Update")
     print("="*60)
 
     for collection_name in ["students", "courses"]:
@@ -111,31 +94,29 @@ def task4_conditional_score_update(db):
             if doc["_id"] == 1:
                 col.update_one(
                     {"_id": 1},
-                    {"$set": {"Score.2": 5}}   # index 2 = 3rd position
+                    {"$set": {"Score.2": 5}}   
                 )
-                print(f"   ✅ [{collection_name}] _id=1 → Score[2] (3rd pos) = 5")
+                print(f"[{collection_name}] _id=1 → Score[2] (3rd pos) = 5")
             else:
                 col.update_one(
                     {"_id": doc["_id"]},
-                    {"$set": {"Score.3": 6}}   # index 3 = 4th position
+                    {"$set": {"Score.3": 6}}
                 )
-                print(f"   ✅ [{collection_name}] _id={doc['_id']} → Score[3] (4th pos) = 6")
+                print(f"[{collection_name}] _id={doc['_id']} → Score[3] (4th pos) = 6")
 
     # Show results
-    print("\n   📋 Students after conditional update:")
+    print("\n Students after conditional update:")
     for s in db.students.find({}, {"name":1, "Score":1}):
         print(f"      {s['name']}: Score = {s['Score']}")
 
-    print("\n   📋 Courses after conditional update:")
+    print("\nCourses after conditional update:")
     for c in db.courses.find({}, {"title":1, "Score":1}):
         print(f"      {c['title']}: Score = {c['Score']}")
 
-# ─────────────────────────────────────────────
 # PART 1 – TASK 5: Multiply Each Score Element by 20
-# ─────────────────────────────────────────────
 def task5_multiply_scores(db):
     print("\n" + "="*60)
-    print("📌 TASK 5: Multiplying Each Score Element by 20")
+    print("TASK 5: Multiplying Each Score Element by 20")
     print("="*60)
 
     for collection_name in ["students", "courses"]:
@@ -148,21 +129,19 @@ def task5_multiply_scores(db):
                 {"$set": {"Score": new_scores}}
             )
 
-    print("✅ All Score elements multiplied by 20")
-    print("\n   📋 Final Students Scores:")
+    print("ll Score elements multiplied by 20")
+    print("\n Final Students Scores:")
     for s in db.students.find({}, {"name":1, "Score":1}):
         print(f"      {s['name']}: Score = {s['Score']}")
 
-    print("\n   📋 Final Courses Scores:")
+    print("\n Final Courses Scores:")
     for c in db.courses.find({}, {"title":1, "Score":1}):
         print(f"      {c['title']}: Score = {c['Score']}")
 
-# ─────────────────────────────────────────────
 # PART 2 – One-to-Many Relationship
-# ─────────────────────────────────────────────
 def part2_relationship(db):
     print("\n" + "="*60)
-    print("📌 PART 2 – TASK 1: One-to-Many Relationship")
+    print("PART 2 – TASK 1: One-to-Many Relationship")
     print("="*60)
 
     db.enrollments.drop()
@@ -179,20 +158,18 @@ def part2_relationship(db):
     ]
 
     db.enrollments.insert_many(enrollments)
-    print(f"✅ Created 'enrollments' collection with {len(enrollments)} documents")
+    print(f"Created 'enrollments' collection with {len(enrollments)} documents")
     print("   Relationship: students (1) ──────< enrollments (Many)")
     print("   Relationship: courses  (1) ──────< enrollments (Many)")
     print()
-    print("   📋 Enrollments:")
+    print("Enrollments:")
     for e in db.enrollments.find({}):
         print(f"      student_id={e['student_id']} → course_id={e['course_id']} | Grade: {e['grade']}")
 
-# ─────────────────────────────────────────────
 # PART 2 – Aggregation Pipeline (printed as CMD reference)
-# ─────────────────────────────────────────────
 def part2_aggregation_instructions():
     print("\n" + "="*60)
-    print("📌 PART 2 – TASK 2: Aggregation Pipeline (Run in Mongo Shell)")
+    print("PART 2 – TASK 2: Aggregation Pipeline (Run in Mongo Shell)")
     print("="*60)
     print("""
    Run this in mongosh or mongo CMD:
@@ -230,9 +207,7 @@ def part2_aggregation_instructions():
    ])
 """)
 
-# ─────────────────────────────────────────────
 # MAIN RUNNER
-# ─────────────────────────────────────────────
 def main():
     try:
         client, db = connect()
@@ -244,12 +219,12 @@ def main():
         part2_relationship(db)
         part2_aggregation_instructions()
         print("\n" + "="*60)
-        print("🎉 ALL MONGODB TASKS COMPLETED SUCCESSFULLY!")
+        print(" ALL MONGODB TASKS COMPLETED SUCCESSFULLY!")
         print("="*60 + "\n")
         client.close()
     except Exception as e:
-        print(f"\n❌ Error: {e}")
-        print("💡 Make sure MongoDB is running: sudo systemctl start mongod")
+        print(f"\n Error: {e}")
+        print("Make sure MongoDB is running: sudo systemctl start mongod")
         sys.exit(1)
 
 if __name__ == "__main__":

@@ -1,38 +1,26 @@
-"""
-╔══════════════════════════════════════════════════════════════╗
-║          Cassandra Task - Complete Professional Solution       ║
-║          Keyspace: university_ks                              ║
-╚══════════════════════════════════════════════════════════════╝
-"""
-
 from cassandra.cluster import Cluster
 from cassandra.auth import PlainTextAuthProvider
 import sys
 import os
 import time
 
-# ─────────────────────────────────────────────
 # CONNECTION SETUP
-# ─────────────────────────────────────────────
-
 def connect():
     host = os.getenv("CASSANDRA_HOST", "cassandra")
 
-    for i in range(20):  # 20 محاولة
+    for i in range(20):
         try:
             cluster = Cluster([host], port=9042)
             session = cluster.connect()
-            print("✅ Connected to Cassandra successfully!")
+            print("Connected to Cassandra successfully!")
             return cluster, session
         except Exception as e:
-            print(f"⏳ Cassandra not ready yet... retry {i+1}/20")
+            print(f"Cassandra not ready yet... retry {i+1}/20")
             time.sleep(5)
 
-    raise Exception("❌ Cassandra failed to start after retries")
+    raise Exception("Cassandra failed to start after retries")
 
-# ─────────────────────────────────────────────
 # KEYSPACE SETUP
-# ─────────────────────────────────────────────
 def setup_keyspace(session):
     session.execute("""
         CREATE KEYSPACE IF NOT EXISTS university_ks
@@ -44,9 +32,7 @@ def setup_keyspace(session):
     session.set_keyspace('university_ks')
     print("✅ Keyspace 'university_ks' ready")
 
-# ─────────────────────────────────────────────
 # PART 1 – TASK 1: Create Table with Composite Primary Key
-# ─────────────────────────────────────────────
 def task1_create_table(session):
     print("\n" + "="*60)
     print("📌 TASK 1: Creating Table with Composite Primary Key")
@@ -65,22 +51,13 @@ def task1_create_table(session):
         ) WITH CLUSTERING ORDER BY (student_id ASC)
     """)
 
-    print("✅ Table 'exam_results' created")
-    print("   Schema:")
-    print("   ┌─────────────────────────────────────────────────┐")
-    print("   │  TABLE: exam_results                            │")
-    print("   │  Partition Key  : department  (TEXT)            │")
-    print("   │  Clustering Key : student_id  (INT)             │")
-    print("   │  Attributes     : student_name, course_name,    │")
-    print("   │                   score                         │")
-    print("   └─────────────────────────────────────────────────┘")
+    print(" Table 'exam_results' created")
 
-# ─────────────────────────────────────────────
+
 # PART 1 – TASK 2: Insert 5+ Rows
-# ─────────────────────────────────────────────
 def task2_insert_rows(session):
     print("\n" + "="*60)
-    print("📌 TASK 2: Inserting Rows")
+    print("TASK 2: Inserting Rows")
     print("="*60)
 
     rows = [
@@ -101,20 +78,18 @@ def task2_insert_rows(session):
     for row in rows:
         session.execute(insert_stmt, row)
 
-    print(f"✅ Inserted {len(rows)} rows into 'exam_results'")
-    print("\n   📋 Current Data:")
+    print(f" Inserted {len(rows)} rows into 'exam_results'")
+    print("\n   Current Data:")
     print(f"   {'Dept':<8} {'ID':<5} {'Name':<20} {'Course':<22} {'Score'}")
     print("   " + "-"*65)
     results = session.execute("SELECT * FROM exam_results")
     for r in results:
         print(f"   {r.department:<8} {r.student_id:<5} {r.student_name:<20} {r.course_name:<22} {r.score}")
 
-# ─────────────────────────────────────────────
 # PART 1 – TASK 3: Update a Column Value
-# ─────────────────────────────────────────────
 def task3_update(session):
     print("\n" + "="*60)
-    print("📌 TASK 3: Updating a Column Value")
+    print("TASK 3: Updating a Column Value")
     print("="*60)
 
     # Update Ahmed Hassan's score
@@ -123,7 +98,7 @@ def task3_update(session):
         SET score = 98.0
         WHERE department = 'CS' AND student_id = 1
     """)
-    print("✅ Updated score of Ahmed Hassan (CS, id=1) → 98.0")
+    print("Updated score of Ahmed Hassan (CS, id=1) → 98.0")
 
     # Update Nour Ali's course name
     session.execute("""
@@ -131,39 +106,35 @@ def task3_update(session):
         SET course_name = 'Advanced Web Development'
         WHERE department = 'IT' AND student_id = 4
     """)
-    print("✅ Updated course_name of Nour Ali (IT, id=4) → 'Advanced Web Development'")
+    print("Updated course_name of Nour Ali (IT, id=4) → 'Advanced Web Development'")
 
     # Verify
     row = session.execute(
         "SELECT * FROM exam_results WHERE department='CS' AND student_id=1"
     ).one()
-    print(f"\n   ✅ Verified: {row.student_name} new score = {row.score}")
+    print(f"\n   Verified: {row.student_name} new score = {row.score}")
 
-# ─────────────────────────────────────────────
 # PART 1 – TASK 4: Delete a Row
-# ─────────────────────────────────────────────
 def task4_delete(session):
     print("\n" + "="*60)
-    print("📌 TASK 4: Deleting a Row")
+    print("TASK 4: Deleting a Row")
     print("="*60)
 
     session.execute("""
         DELETE FROM exam_results
         WHERE department = 'Math' AND student_id = 7
     """)
-    print("✅ Deleted row: Karim Mostafa (Math, id=7)")
+    print("Deleted row: Karim Mostafa (Math, id=7)")
 
     count = session.execute(
         "SELECT COUNT(*) FROM exam_results WHERE department='Math'"
     ).one()[0]
-    print(f"   → Remaining rows in Math dept: {count}")
+    print(f"    Remaining rows in Math dept: {count}")
 
-# ─────────────────────────────────────────────
 # PART 2 – Shell Instructions
-# ─────────────────────────────────────────────
 def part2_shell_instructions():
     print("\n" + "="*60)
-    print("📌 PART 2 – Shell Commands (Run in cqlsh)")
+    print(" PART 2 – Shell Commands (Run in cqlsh)")
     print("="*60)
 
     print("""
@@ -200,9 +171,7 @@ def part2_shell_instructions():
    SELECT * FROM exam_by_score;
 """)
 
-# ─────────────────────────────────────────────
 # MAIN RUNNER
-# ─────────────────────────────────────────────
 def main():
     try:
         cluster, session = connect()
@@ -213,12 +182,12 @@ def main():
         task4_delete(session)
         part2_shell_instructions()
         print("\n" + "="*60)
-        print("🎉 ALL CASSANDRA TASKS COMPLETED SUCCESSFULLY!")
+        print("ALL CASSANDRA TASKS COMPLETED SUCCESSFULLY!")
         print("="*60 + "\n")
         cluster.shutdown()
     except Exception as e:
-        print(f"\n❌ Error: {e}")
-        print("💡 Make sure Cassandra is running: sudo systemctl start cassandra")
+        print(f"\nError: {e}")
+        print("Make sure Cassandra is running: sudo systemctl start cassandra")
         sys.exit(1)
 
 if __name__ == "__main__":
