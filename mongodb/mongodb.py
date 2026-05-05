@@ -123,11 +123,17 @@ def task5_multiply_scores(db):
         col = db[collection_name]
         docs = list(col.find({}))
         for doc in docs:
-            new_scores = [x * 20 for x in doc["Score"]]
             col.update_one(
                 {"_id": doc["_id"]},
-                {"$set": {"Score": new_scores}}
-            )
+                {
+                "$mul": {
+                    "Score.0": 20,
+                    "Score.1": 20,
+                    "Score.2": 20,
+                    "Score.3": 20
+                }
+            }
+)
 
     print("ll Score elements multiplied by 20")
     print("\n Final Students Scores:")
