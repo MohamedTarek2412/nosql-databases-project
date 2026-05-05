@@ -1,25 +1,10 @@
-"""
-╔══════════════════════════════════════════════════════════════════╗
-║         Neo4j Task - Complete Professional Solution              ║
-║         Dataset: Movie Graph (Neo4j Official Built-in Dataset)   ║
-║         Source : https://github.com/neo4j-graph-examples/movies  ║
-║                                                                  ║
-║  Nodes        : Person, Movie                                    ║
-║  Relationships: ACTED_IN, DIRECTED, PRODUCED, WROTE, REVIEWED   ║
-╚══════════════════════════════════════════════════════════════════╝
-"""
-
 from neo4j import GraphDatabase
 import sys
 import os
 URI = os.getenv("NEO4J_URI", "bolt://localhost:7687")
-# ─────────────────────────────────────────────
 # CONNECTION SETUP
-# ─────────────────────────────────────────────
 USER     = "neo4j"
 PASSWORD = "password"   
-
-
 class Neo4jMovieSolution:
 
     def __init__(self):
@@ -32,21 +17,17 @@ class Neo4jMovieSolution:
     def run(self, query, **params):
         with self.driver.session() as session:
             return list(session.run(query, **params))
-
-    # ══════════════════════════════════════════════════
     # TASK 1: Create the Graph (Nodes + Relationships + Properties)
-    # Dataset: Neo4j Official Movie Graph
-    # ══════════════════════════════════════════════════
     def task1_create_graph(self):
         print("\n" + "═"*60)
-        print("📌 TASK 1: Creating the Movie Graph")
+        print("TASK 1: Creating the Movie Graph")
         print("   Dataset: Neo4j Official Movie Graph Dataset")
         print("   Source : https://github.com/neo4j-graph-examples/movies")
         print("═"*60)
 
         # Clear existing data
         self.run("MATCH (n) DETACH DELETE n")
-        print("   🧹 Cleared existing data\n")
+        print("   Cleared existing data\n")
 
         # ── Create Movie Nodes ──
         self.run("""
@@ -62,7 +43,7 @@ class Neo4jMovieSolution:
               (:Movie {title: 'Cloud Atlas',       released: 2012, tagline: 'Everything is connected'}),
               (:Movie {title: 'Speed Racer',       released: 2008, tagline: 'Speed has no limits'})
         """)
-        print("   ✅ Created 10 Movie nodes")
+        print("   Created 10 Movie nodes")
 
         # ── Create Person Nodes ──
         self.run("""
@@ -92,7 +73,7 @@ class Neo4jMovieSolution:
               (:Person {name: 'Jim Broadbent',   born: 1949}),
               (:Person {name: 'Emile Hirsch',    born: 1985})
         """)
-        print("   ✅ Created 24 Person nodes")
+        print("   Created 24 Person nodes")
 
         # ── ACTED_IN Relationships ──
         acted_in = [
@@ -127,7 +108,7 @@ class Neo4jMovieSolution:
                 MATCH (p:Person {name: $person}), (m:Movie {title: $movie})
                 CREATE (p)-[:ACTED_IN {roles: $role, earnings: $roles}]->(m)
             """, person=person, movie=movie, role=role, roles=roles)
-        print(f"   ✅ Created {len(acted_in)} ACTED_IN relationships")
+        print(f"  Created {len(acted_in)} ACTED_IN relationships")
 
         # ── DIRECTED Relationships ──
         directed = [
@@ -154,7 +135,7 @@ class Neo4jMovieSolution:
                 MATCH (p:Person {name: $person}), (m:Movie {title: $movie})
                 CREATE (p)-[:DIRECTED]->(m)
             """, person=person, movie=movie)
-        print(f"   ✅ Created {len(directed)} DIRECTED relationships")
+        print(f"   Created {len(directed)} DIRECTED relationships")
 
         # ── PRODUCED Relationships ──
         produced = [
@@ -167,7 +148,7 @@ class Neo4jMovieSolution:
                 MATCH (p:Person {name: $person}), (m:Movie {title: $movie})
                 CREATE (p)-[:PRODUCED {role: 'Executive Producer'}]->(m)
             """, person=person, movie=movie)
-        print(f"   ✅ Created {len(produced)} PRODUCED relationships")
+        print(f"   Created {len(produced)} PRODUCED relationships")
 
         # ── WROTE Relationships ──
         wrote = [
@@ -182,7 +163,7 @@ class Neo4jMovieSolution:
                 MATCH (p:Person {name: $person}), (m:Movie {title: $movie})
                 CREATE (p)-[:WROTE]->(m)
             """, person=person, movie=movie)
-        print(f"   ✅ Created {len(wrote)} WROTE relationships")
+        print(f"   Created {len(wrote)} WROTE relationships")
 
         # ── REVIEWED Relationships ──
         reviews = [
@@ -196,19 +177,17 @@ class Neo4jMovieSolution:
                 MATCH (p:Person {name: $person}), (m:Movie {title: $movie})
                 CREATE (p)-[:REVIEWED {summary: $summary, rating: $rating}]->(m)
             """, person=person, movie=movie, summary=summary, rating=rating)
-        print(f"   ✅ Created {len(reviews)} REVIEWED relationships")
+        print(f"   Created {len(reviews)} REVIEWED relationships")
 
-        print("\n   📊 Graph created successfully!")
+        print("\n    Graph created successfully!")
         print("   Nodes  : Person (24) + Movie (10) = 34 total")
         print("   Rels   : ACTED_IN + DIRECTED + PRODUCED + WROTE + REVIEWED")
 
 
-    # ══════════════════════════════════════════════════
     # TASK 2: Delete Nodes, Relationships, and Properties
-    # ══════════════════════════════════════════════════
     def task2_delete(self):
         print("\n" + "═"*60)
-        print("📌 TASK 2: Deleting Nodes, Relationships & Properties")
+        print("TASK 2: Deleting Nodes, Relationships & Properties")
         print("═"*60)
 
         # 2a – Delete a specific ACTED_IN relationship
@@ -216,47 +195,45 @@ class Neo4jMovieSolution:
             MATCH (:Person {name: 'Val Kilmer'})-[r:ACTED_IN]->(:Movie {title: 'Top Gun'})
             DELETE r
         """)
-        print("   ✅ Deleted ACTED_IN relationship: Val Kilmer → Top Gun")
+        print("Deleted ACTED_IN relationship: Val Kilmer → Top Gun")
 
         # 2b – Delete a REVIEWED relationship
         self.run("""
             MATCH (:Person {name: 'Demi Moore'})-[r:REVIEWED]->(:Movie {title: 'Top Gun'})
             DELETE r
         """)
-        print("   ✅ Deleted REVIEWED relationship: Demi Moore → Top Gun")
+        print("Deleted REVIEWED relationship: Demi Moore → Top Gun")
 
         # 2c – Remove a property from a Movie node
         self.run("""
             MATCH (m:Movie {title: 'Speed Racer'})
             REMOVE m.tagline
         """)
-        print("   ✅ Removed 'tagline' property from Movie: Speed Racer")
+        print("Removed 'tagline' property from Movie: Speed Racer")
 
         # 2d – Remove a property from a Person node
         self.run("""
             MATCH (p:Person {name: 'Tony Scott'})
             REMOVE p.born
         """)
-        print("   ✅ Removed 'born' property from Person: Tony Scott")
+        print("Removed 'born' property from Person: Tony Scott")
 
         # 2e – Delete a node with all its relationships (DETACH DELETE)
         self.run("""
             MATCH (p:Person {name: 'Kiefer Sutherland'})
             DETACH DELETE p
         """)
-        print("   ✅ Deleted Person node + all relationships: Kiefer Sutherland")
+        print("  Deleted Person node + all relationships: Kiefer Sutherland")
 
         # Verify
         result = self.run("MATCH (n) RETURN COUNT(n) AS total")
-        print(f"\n   📊 Remaining nodes after deletions: {result[0]['total']}")
+        print(f"\n   Remaining nodes after deletions: {result[0]['total']}")
 
 
-    # ══════════════════════════════════════════════════
     # TASK 3: Update Properties of Nodes and Relationships
-    # ══════════════════════════════════════════════════
     def task3_update(self):
         print("\n" + "═"*60)
-        print("📌 TASK 3: Updating Node & Relationship Properties")
+        print("TASK 3: Updating Node & Relationship Properties")
         print("═"*60)
 
         # 3a – Update Movie tagline and add a new property
@@ -267,7 +244,7 @@ class Neo4jMovieSolution:
                 m.box_office = 463517383,
                 m.updated    = '2024-01-01'
         """)
-        print("   ✅ Updated Movie 'The Matrix': added genre, box_office, updated tagline")
+        print("Updated Movie 'The Matrix': added genre, box_office, updated tagline")
 
         # 3b – Update Person born year and add rating
         self.run("""
@@ -276,7 +253,7 @@ class Neo4jMovieSolution:
                 p.nationality = 'Canadian',
                 p.popularity  = 9.5
         """)
-        print("   ✅ Updated Person 'Keanu Reeves': added nationality, popularity")
+        print("Updated Person 'Keanu Reeves': added nationality, popularity")
 
         # 3c – Update ACTED_IN relationship property
         self.run("""
@@ -285,7 +262,7 @@ class Neo4jMovieSolution:
                 r.award     = 'MTV Movie Award',
                 r.fee        = 10000000
         """)
-        print("   ✅ Updated ACTED_IN relationship: Keanu → The Matrix (added award, fee)")
+        print("Updated ACTED_IN relationship: Keanu → The Matrix (added award, fee)")
 
         # 3d – Update REVIEWED relationship
         self.run("""
@@ -293,7 +270,7 @@ class Neo4jMovieSolution:
             SET r.rating  = 98,
                 r.summary = 'One of the greatest sci-fi films ever made — Updated Review'
         """)
-        print("   ✅ Updated REVIEWED relationship: Kevin Bacon → The Matrix (rating=98)")
+        print("Updated REVIEWED relationship: Kevin Bacon → The Matrix (rating=98)")
 
         # 3e – Bulk update: add 'era' property to all movies released before 2000
         self.run("""
@@ -301,7 +278,7 @@ class Neo4jMovieSolution:
             WHERE m.released < 2000
             SET m.era = 'Classic'
         """)
-        print("   ✅ Bulk updated: added era='Classic' to all Movies released before 2000")
+        print("Bulk updated: added era='Classic' to all Movies released before 2000")
 
         # 3f – Bulk update: add 'generation' to Person nodes born before 1960
         self.run("""
@@ -309,19 +286,17 @@ class Neo4jMovieSolution:
             WHERE p.born < 1960
             SET p.generation = 'Veteran'
         """)
-        print("   ✅ Bulk updated: added generation='Veteran' to persons born before 1960")
+        print("Bulk updated: added generation='Veteran' to persons born before 1960")
 
 
-    # ══════════════════════════════════════════════════
     # TASK 4: Find Nodes Based on Conditions
-    # ══════════════════════════════════════════════════
     def task4_find_nodes(self):
         print("\n" + "═"*60)
-        print("📌 TASK 4: Finding Nodes Based on Conditions")
+        print("TASK 4: Finding Nodes Based on Conditions")
         print("═"*60)
 
         # 4a – Movies released after 2000
-        print("\n   🔍 4a) Movies released after year 2000:")
+        print("\n   4a) Movies released after year 2000:")
         rows = self.run("""
             MATCH (m:Movie)
             WHERE m.released > 2000
@@ -329,10 +304,10 @@ class Neo4jMovieSolution:
             ORDER BY m.released ASC
         """)
         for r in rows:
-            print(f"      🎬 {r['title']:<35} ({r['year']})")
+            print(f" {r['title']:<35} ({r['year']})")
 
         # 4b – Persons born in the 1960s
-        print("\n   🔍 4b) Persons born in the 1960s (1960–1969):")
+        print("\n    4b) Persons born in the 1960s (1960–1969):")
         rows = self.run("""
             MATCH (p:Person)
             WHERE p.born >= 1960 AND p.born <= 1969
@@ -340,10 +315,10 @@ class Neo4jMovieSolution:
             ORDER BY p.born
         """)
         for r in rows:
-            print(f"      👤 {r['name']:<25} Born: {r['born']}")
+            print(f"{r['name']:<25} Born: {r['born']}")
 
         # 4c – Movies with tagline containing 'World' or 'mind'
-        print("\n   🔍 4c) Movies whose tagline contains 'World' or 'free':")
+        print("\n   4c) Movies whose tagline contains 'World' or 'free':")
         rows = self.run("""
             MATCH (m:Movie)
             WHERE toLower(m.tagline) CONTAINS 'world'
@@ -351,10 +326,10 @@ class Neo4jMovieSolution:
             RETURN m.title AS title, m.tagline AS tagline
         """)
         for r in rows:
-            print(f"      🎬 {r['title']:<30} | \"{r['tagline']}\"")
+            print(f"{r['title']:<30} | \"{r['tagline']}\"")
 
         # 4d – Persons who acted in more than 1 movie
-        print("\n   🔍 4d) Persons who acted in more than 1 movie:")
+        print("\n   4d) Persons who acted in more than 1 movie:")
         rows = self.run("""
             MATCH (p:Person)-[:ACTED_IN]->(m:Movie)
             WITH p, COUNT(m) AS movieCount
@@ -363,28 +338,26 @@ class Neo4jMovieSolution:
             ORDER BY movieCount DESC
         """)
         for r in rows:
-            print(f"      🌟 {r['name']:<25} → Acted in {r['movieCount']} movies")
+            print(f"      {r['name']:<25} → Acted in {r['movieCount']} movies")
 
         # 4e – All Movie nodes with era = 'Classic'
-        print("\n   🔍 4e) Movies with era = 'Classic' (released before 2000):")
+        print("\n    4e) Movies with era = 'Classic' (released before 2000):")
         rows = self.run("""
             MATCH (m:Movie {era: 'Classic'})
             RETURN m.title AS title, m.released AS year, m.era AS era
         """)
         for r in rows:
-            print(f"      🏛️  {r['title']:<30} ({r['year']}) — Era: {r['era']}")
+            print(f"       {r['title']:<30} ({r['year']}) — Era: {r['era']}")
 
 
-    # ══════════════════════════════════════════════════
     # TASK 5: Find Relationships Based on Conditions
-    # ══════════════════════════════════════════════════
     def task5_find_relationships(self):
         print("\n" + "═"*60)
-        print("📌 TASK 5: Finding Relationships Based on Conditions")
+        print("TASK 5: Finding Relationships Based on Conditions")
         print("═"*60)
 
         # 5a – REVIEWED relationships with rating > 85
-        print("\n   🔍 5a) REVIEWED relationships with rating > 85:")
+        print("\n    5a) REVIEWED relationships with rating > 85:")
         rows = self.run("""
             MATCH (p:Person)-[r:REVIEWED]->(m:Movie)
             WHERE r.rating > 85
@@ -393,11 +366,11 @@ class Neo4jMovieSolution:
             ORDER BY r.rating DESC
         """)
         for r in rows:
-            print(f"      ⭐ {r['reviewer']:<20} → {r['movie']:<25} | Rating: {r['rating']}")
+            print(f"       {r['reviewer']:<20} → {r['movie']:<25} | Rating: {r['rating']}")
             print(f"         Summary: \"{r['summary']}\"")
 
         # 5b – ACTED_IN relationships for The Matrix movies
-        print("\n   🔍 5b) All actors in Matrix trilogy:")
+        print("\n   5b) All actors in Matrix trilogy:")
         rows = self.run("""
             MATCH (p:Person)-[r:ACTED_IN]->(m:Movie)
             WHERE m.title STARTS WITH 'The Matrix'
@@ -405,41 +378,41 @@ class Neo4jMovieSolution:
             ORDER BY m.title, p.name
         """)
         for r in rows:
-            print(f"      🎭 {r['actor']:<25} → {r['movie']:<30} | Role: {r['role']}")
+            print(f"       {r['actor']:<25} → {r['movie']:<30} | Role: {r['role']}")
 
         # 5c – DIRECTED relationships (find all directors and their movies)
-        print("\n   🔍 5c) All DIRECTED relationships:")
+        print("\n    5c) All DIRECTED relationships:")
         rows = self.run("""
             MATCH (p:Person)-[:DIRECTED]->(m:Movie)
             RETURN p.name AS director, COLLECT(m.title) AS movies
             ORDER BY p.name
         """)
         for r in rows:
-            print(f"      🎬 {r['director']:<25} directed → {r['movies']}")
+            print(f"      {r['director']:<25} directed → {r['movies']}")
 
         # 5d – Persons connected to 'Tom Hanks' through any relationship
-        print("\n   🔍 5d) All movies connected to Tom Hanks (any relationship):")
+        print("\n    5d) All movies connected to Tom Hanks (any relationship):")
         rows = self.run("""
             MATCH (p:Person {name: 'Tom Hanks'})-[r]->(m:Movie)
             RETURN type(r) AS relationship, m.title AS movie
         """)
         for r in rows:
-            print(f"      🔗 Tom Hanks -[{r['relationship']}]-> {r['movie']}")
+            print(f"       Tom Hanks -[{r['relationship']}]-> {r['movie']}")
 
         # 5e – People who both acted in AND directed the same movie
-        print("\n   🔍 5e) People who both ACTED_IN and DIRECTED same movie:")
+        print("\n    5e) People who both ACTED_IN and DIRECTED same movie:")
         rows = self.run("""
             MATCH (p:Person)-[:ACTED_IN]->(m:Movie)<-[:DIRECTED]-(p)
             RETURN p.name AS person, m.title AS movie
         """)
         if rows:
             for r in rows:
-                print(f"      🎭🎬 {r['person']} both acted & directed in {r['movie']}")
+                print(f"{r['person']} both acted & directed in {r['movie']}")
         else:
-            print("      (No person both acted and directed the same movie in this dataset)")
+            print("(No person both acted and directed the same movie in this dataset)")
 
         # 5f – Shortest path between two actors
-        print("\n   🔍 5f) Shortest path: Keanu Reeves ↔ Tom Hanks:")
+        print("\n    5f) Shortest path: Keanu Reeves ↔ Tom Hanks:")
         rows = self.run("""
             MATCH path = shortestPath(
               (:Person {name: 'Keanu Reeves'})-[*..6]-(:Person {name: 'Tom Hanks'})
@@ -451,15 +424,13 @@ class Neo4jMovieSolution:
                    length(path) AS hops
         """)
         for r in rows:
-            print(f"      🛣️  Path ({r['hops']} hops): {' → '.join(r['path_names'])}")
+            print(f"  Path ({r['hops']} hops): {' → '.join(r['path_names'])}")
 
 
-    # ══════════════════════════════════════════════════
     # GRAPH SUMMARY
-    # ══════════════════════════════════════════════════
     def print_summary(self):
         print("\n" + "═"*60)
-        print("📊 FINAL GRAPH SUMMARY")
+        print("FINAL GRAPH SUMMARY")
         print("═"*60)
 
         nodes = self.run("MATCH (n) RETURN labels(n)[0] AS label, COUNT(n) AS count ORDER BY label")
@@ -477,15 +448,8 @@ class Neo4jMovieSolution:
         print(f"\n   TOTAL → {total_nodes} Nodes | {total_rels} Relationships")
 
 
-# ─────────────────────────────────────────────
 # MAIN RUNNER
-# ─────────────────────────────────────────────
 def main():
-    print("╔" + "═"*58 + "╗")
-    print("║     Neo4j Movie Graph — Complete Solution               ║")
-    print("║     Dataset: Neo4j Official Movie Graph                 ║")
-    print("╚" + "═"*58 + "╝")
-
     try:
         neo = Neo4jMovieSolution()
 
@@ -495,21 +459,12 @@ def main():
         neo.task4_find_nodes()
         neo.task5_find_relationships()
         neo.print_summary()
-
         print("\n" + "═"*60)
-        print("🎉 ALL NEO4J TASKS COMPLETED SUCCESSFULLY!")
+        print("ALL NEO4J TASKS COMPLETED SUCCESSFULLY!")
         print("═"*60 + "\n")
-
         neo.close()
-
     except Exception as e:
-        print(f"\n❌ Error: {e}")
-        print("💡 Tips:")
-        print("   1. Make sure Neo4j is running")
-        print("   2. Update the PASSWORD variable at the top of this file")
-        print("   3. Install driver: pip install neo4j")
+        print(f"\nError: {e}")
         sys.exit(1)
-
-
 if __name__ == "__main__":
     main()
